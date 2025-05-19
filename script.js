@@ -47,99 +47,87 @@
         }
 
         function updateTrialCountdown() {
-    if (localStorage.getItem('trialStatus') === 'expired') return;
-    
-    const startDate = new Date(localStorage.getItem('trialStartDate'));
-    const now = new Date();
-    const trialDays = 3;
-    const endDate = new Date(startDate);
-    endDate.setDate(startDate.getDate() + trialDays);
-    
-    // Hitung waktu tersisa
-    const diffTime = endDate - now;
-    
-    if (diffTime <= 0) {
-        checkTrialStatus();
-        return;
-    }
-    
-    // Hitung hari, jam, menit, detik
-    const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diffTime % (1000 * 60)) / 1000);
-    
-    // Format waktu untuk ditampilkan
-    const timeString = `${days} Hari ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    const shortTimeString = `${days} Hari ${hours.toString().padStart(2, '0')}j`;
-    
-    // Update tampilan di sidebar (desktop)
-    const countdownEl = document.getElementById('sidebarTrialCountdown');
-    if (countdownEl) {
-        countdownEl.querySelector('.trial-time').textContent = timeString;
-    }
-    
-    // Update tampilan di mobile
-    const mobileCountdown = document.getElementById('mobileTrialCountdown');
-    if (mobileCountdown) {
-        const timeElement = mobileCountdown.querySelector('.trial-time');
-        
-        // Format waktu untuk mobile: "3H 12j 45m" atau "3 Hari 12:45:30"
-        const isMobileSmall = window.innerWidth < 400;
-        const shortTimeString = isMobileSmall 
-            ? `${days}H ${hours}j ${minutes}m`
-            : `${days} Hari ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        
-        timeElement.textContent = shortTimeString;
-        
-        // Reset semua kelas
-        mobileCountdown.className = 'mobile-trial-info';
-        
-        // Hitung progress trial
-        const progressPercent = ((trialDays * 24 * 60 * 60 * 1000 - diffTime) / (trialDays * 24 * 60 * 60 * 1000)) * 100;
-        
-        // Atur warna dan efek berdasarkan sisa waktu
-        if (progressPercent > 90) {
-            mobileCountdown.classList.add('danger', 'pulse');
-        } else if (progressPercent > 80) {
-            mobileCountdown.classList.add('warning', 'pulse');
-        } else {
-            mobileCountdown.classList.add('normal');
+            if (localStorage.getItem('trialStatus') === 'expired') return;
+            
+            const startDate = new Date(localStorage.getItem('trialStartDate'));
+            const now = new Date();
+            const trialDays = 3;
+            const endDate = new Date(startDate);
+            endDate.setDate(startDate.getDate() + trialDays);
+            
+            // Hitung waktu tersisa
+            const diffTime = endDate - now;
+            
+            if (diffTime <= 0) {
+                checkTrialStatus();
+                return;
+            }
+            
+            // Hitung hari, jam, menit, detik
+            const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diffTime % (1000 * 60)) / 1000);
+            
+            // Format waktu untuk ditampilkan
+            const timeString = `${days} Hari ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            const shortTimeString = `${days}H ${hours}j`; // Format lebih singkat untuk mobile
+            
+            // Update tampilan di header (mobile)
+            const headerCountdown = document.getElementById('headerTrialCountdown');
+            if (headerCountdown) {
+                const timeElement = headerCountdown.querySelector('.trial-time');
+                if (timeElement) {
+                    timeElement.textContent = window.innerWidth < 400 ? shortTimeString : timeString;
+                }
+                
+                // Update warna berdasarkan sisa waktu
+                const progressPercent = ((trialDays * 24 * 60 * 60 * 1000 - diffTime) / (trialDays * 24 * 60 * 60 * 1000)) * 100;
+                
+                // Reset semua kelas
+                headerCountdown.className = 'header-trial-info';
+                
+                if (progressPercent > 90) {
+                    headerCountdown.classList.add('danger', 'pulse');
+                } else if (progressPercent > 80) {
+                    headerCountdown.classList.add('warning', 'pulse');
+                } else {
+                    headerCountdown.classList.add('normal');
+                }
+            }
+            
+            // Update progress bar (desktop)
+            const totalTrialTime = trialDays * 24 * 60 * 60 * 1000;
+            const elapsedTime = totalTrialTime - diffTime;
+            const progressPercent = (elapsedTime / totalTrialTime) * 100;
+            
+            const progressBar = document.getElementById('trialProgressBar');
+            if (progressBar) {
+                progressBar.style.width = `${progressPercent}%`;
+                
+                // Ubah warna berdasarkan sisa waktu
+                if (progressPercent > 80) {
+                    progressBar.style.background = 'linear-gradient(90deg, var(--warning), var(--danger))';
+                } else if (progressPercent > 50) {
+                    progressBar.style.background = 'linear-gradient(90deg, var(--warning), var(--accent))';
+                }
+            }
+            
+            // Update modal countdown (jika ada)
+            const modalCountdown = document.getElementById('trialCountdown');
+            if (modalCountdown) {
+                modalCountdown.innerHTML = `
+                    <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;">${timeString}</div>
+                    <div style="font-size: 0.9rem; color: var(--light);">Sisa waktu trial Anda</div>
+                `;
+            }
+            
+            // Notifikasi saat trial hampir habis
+            if (progressPercent > 90 && !localStorage.getItem('trialWarningShown')) {
+                showToast('Masa trial Anda hampir habis!', 'warning');
+                localStorage.setItem('trialWarningShown', 'true');
+            }
         }
-    }
-    
-    // Update progress bar (desktop)
-    const totalTrialTime = trialDays * 24 * 60 * 60 * 1000;
-    const elapsedTime = totalTrialTime - diffTime;
-    const progressPercent = (elapsedTime / totalTrialTime) * 100;
-    
-    const progressBar = document.getElementById('trialProgressBar');
-    if (progressBar) {
-        progressBar.style.width = `${progressPercent}%`;
-        
-        // Ubah warna berdasarkan sisa waktu
-        if (progressPercent > 80) {
-            progressBar.style.background = 'linear-gradient(90deg, var(--warning), var(--danger))';
-        } else if (progressPercent > 50) {
-            progressBar.style.background = 'linear-gradient(90deg, var(--warning), var(--accent))';
-        }
-    }
-    
-    // Update modal countdown (jika ada)
-    const modalCountdown = document.getElementById('trialCountdown');
-    if (modalCountdown) {
-        modalCountdown.innerHTML = `
-            <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;">${timeString}</div>
-            <div style="font-size: 0.9rem; color: var(--light);">Sisa waktu trial Anda</div>
-        `;
-    }
-    
-    // Notifikasi saat trial hampir habis
-    if (progressPercent > 90 && !localStorage.getItem('trialWarningShown')) {
-        showToast('Masa trial Anda hampir habis!', 'warning');
-        localStorage.setItem('trialWarningShown', 'true');
-    }
-}
         function disableApplication() {
     // Nonaktifkan semua fungsi utama
     document.querySelectorAll('button, input, select, textarea, a').forEach(el => {
@@ -243,8 +231,6 @@
         window.addEventListener('beforeunload', function(e) {
             // Untuk Chrome dan Firefox
             e.preventDefault();
-            e.returnValue = 'Anda yakin ingin meninggalkan aplikasi? Perubahan mungkin tidak akan disimpan.';
-            return e.returnValue;
         });
         // Blokir akses ke developer tools
         document.addEventListener('contextmenu', function(e) {
@@ -1169,6 +1155,9 @@
                 if (e.target === this) {
                     this.classList.remove('active');
                 }
+            });
+            document.getElementById('headerTrialCountdown')?.addEventListener('click', function() {
+                document.getElementById('trialModal').classList.add('active');
             });
         }
 

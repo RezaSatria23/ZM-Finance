@@ -1,33 +1,34 @@
+        // Fungsi manajemen trial
         function setupTrial() {
-        // Cek jika sudah ada data trial dan statusnya belum aktif
-        if (!localStorage.getItem('trialStartDate')) {
-            // Set tanggal mulai trial
-            const startDate = new Date().toISOString();
-            localStorage.setItem('trialStartDate', startDate);
-            localStorage.setItem('trialStatus', 'active');
+            // Cek jika sudah ada data trial
+            if (!localStorage.getItem('trialStartDate')) {
+                // Set tanggal mulai trial
+                const startDate = new Date().toISOString();
+                localStorage.setItem('trialStartDate', startDate);
+                localStorage.setItem('trialStatus', 'active');
+                
+                // Tampilkan modal trial
+                setTimeout(() => {
+                    document.getElementById('trialModal').classList.add('active');
+                }, 1000);
+            } else {
+                checkTrialStatus();
+            }
             
-            // Tampilkan modal trial
-            setTimeout(() => {
-                document.getElementById('trialModal').classList.add('active');
-            }, 1000);
-        } else {
-            checkTrialStatus();
-        }
-        
-        // Update countdown setiap detik
-        updateTrialCountdown();
-        setInterval(updateTrialCountdown, 1000);
-        
-        // Perbarui tampilan trial saat data di-refresh
-        document.getElementById('refreshDataBtn').addEventListener('click', function() {
-            // Perbarui countdown setelah refresh selesai
-            setTimeout(updateTrialCountdown, 800);
-        });
+            // Update countdown setiap detik
+            updateTrialCountdown();
+            setInterval(updateTrialCountdown, 1000);
+            
+            // Perbarui tampilan trial saat data di-refresh
+            document.getElementById('refreshDataBtn').addEventListener('click', function() {
+                // Perbarui countdown setelah refresh selesai
+                setTimeout(updateTrialCountdown, 800);
+            });
 
-        document.querySelector('.mobile-trial-info').addEventListener('click', function() {
-            document.getElementById('trialModal').classList.add('active');
-        });
-    }
+            document.querySelector('.mobile-trial-info').addEventListener('click', function() {
+    document.getElementById('trialModal').classList.add('active');
+});
+        }
 
         function checkTrialStatus() {
             const startDate = new Date(localStorage.getItem('trialStartDate'));
@@ -191,10 +192,8 @@
 }
         // Panggil setupTrial di DOMContentLoaded
         document.addEventListener('DOMContentLoaded', function() {
-            // Jika sudah login (ada nama pengguna) tapi belum setup trial
-        if (localStorage.getItem('userName') && !localStorage.getItem('trialStartDate')) {
             setupTrial();
-        }
+            
             // Event listener untuk tombol modal trial
             document.getElementById('understandTrial').addEventListener('click', function() {
                 document.getElementById('trialModal').classList.remove('active');
@@ -263,28 +262,6 @@
             const firstDay = new Date();
             firstDay.setDate(1);
             document.getElementById('exportStartDate').value = firstDay.toISOString().split('T')[0];
-
-            document.getElementById('confirmLogin').addEventListener('click', function() {
-            const userName = document.getElementById('userNameInput').value.trim();
-            if (!userName) {
-                showToast('Harap masukkan nama Anda', 'error');
-                return;
-            }
-            
-            // Save user name to localStorage
-            localStorage.setItem('userName', userName);
-            
-            // Hide login modal
-            document.getElementById('loginModal').classList.remove('active');
-            
-            // Update user avatar in header
-            const userAvatar = document.querySelector('.user-avatar');
-            const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase();
-            userAvatar.textContent = initials.slice(0, 2);
-            
-            // Mulai masa trial setelah login
-            setupTrial();
-        });
         });
 
         // Database functions

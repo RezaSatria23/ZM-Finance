@@ -858,12 +858,19 @@
 
         /* Mobile Trial Info */
         .mobile-trial-info {
-            display: none; /* Awalnya disembunyikan untuk desktop */
-            padding: 0.5rem 1rem;
-            text-align: center;
-            background-color: rgba(255, 255, 255, 0.1);
-            margin: 0.5rem;
-            border-radius: var(--border-radius-sm);
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: rgba(67, 97, 238, 0.1);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--primary);
+            max-width: 120px;
+            margin: 0 auto;
         }
 
         .mobile-trial-countdown {
@@ -879,6 +886,15 @@
         .mobile-trial-countdown i {
             font-size: 0.9rem;
         }
+        .mobile-trial-info i {
+            font-size: 0.9rem;
+        }
+
+        .mobile-trial-info .trial-time {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
         /* Tampilkan trial info di mobile dan sembunyikan di sidebar */
         @media (max-width: 992px) {
@@ -887,13 +903,19 @@
             }
             
             .mobile-trial-info {
-                display: block;
+                padding: 0.3rem 0.6rem;
+                font-size: 0.8rem;
+                max-width: 110px;
             }
         }
 
         @media (max-width: 576px) {
             .mobile-trial-countdown span {
                 font-size: 0.8rem;
+            }
+            .mobile-trial-info {
+                font-size: 0.75rem;
+                max-width: 100px;
             }
         }
         .mobile-nav {

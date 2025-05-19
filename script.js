@@ -1,131 +1,138 @@
-        // Fungsi manajemen trial
         function setupTrial() {
-            // Cek jika sudah ada data trial
-            if (!localStorage.getItem('trialStartDate')) {
-                // Set tanggal mulai trial
-                const startDate = new Date().toISOString();
-                localStorage.setItem('trialStartDate', startDate);
-                localStorage.setItem('trialStatus', 'active');
-                
-                // Tampilkan modal trial
-                setTimeout(() => {
-                    document.getElementById('trialModal').classList.add('active');
-                }, 1000);
-            } else {
-                checkTrialStatus();
-            }
+        // Cek jika sudah ada data trial dan statusnya belum aktif
+        if (!localStorage.getItem('trialStartDate')) {
+            // Set tanggal mulai trial
+            const startDate = new Date().toISOString();
+            localStorage.setItem('trialStartDate', startDate);
+            localStorage.setItem('trialStatus', 'active');
             
-            // Update countdown setiap detik
-            updateTrialCountdown();
-            setInterval(updateTrialCountdown, 1000);
-            
-            // Perbarui tampilan trial saat data di-refresh
-            document.getElementById('refreshDataBtn').addEventListener('click', function() {
-                // Perbarui countdown setelah refresh selesai
-                setTimeout(updateTrialCountdown, 800);
-            });
-
-            document.querySelector('.mobile-trial-info').addEventListener('click', function() {
-    document.getElementById('trialModal').classList.add('active');
-});
+            // Tampilkan modal trial
+            setTimeout(() => {
+                document.getElementById('trialModal').classList.add('active');
+            }, 1000);
+        } else {
+            checkTrialStatus();
         }
+        
+        // Update countdown setiap detik
+        updateTrialCountdown();
+        setInterval(updateTrialCountdown, 1000);
+        
+        // Perbarui tampilan trial saat data di-refresh
+        document.getElementById('refreshDataBtn').addEventListener('click', function() {
+            // Perbarui countdown setelah refresh selesai
+            setTimeout(updateTrialCountdown, 800);
+        });
+
+        document.querySelector('.mobile-trial-info').addEventListener('click', function() {
+            document.getElementById('trialModal').classList.add('active');
+        });
+    }
 
         function checkTrialStatus() {
+        // Jika belum ada tanggal mulai trial, keluar dari fungsi
+        if (!localStorage.getItem('trialStartDate')) {
+            return;
+        }
+        
+        const startDate = new Date(localStorage.getItem('trialStartDate'));
+        const now = new Date();
+        const trialDays = 3;
+        
+        // Hitung selisih hari
+        const diffTime = now - startDate;
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays >= trialDays) {
+            localStorage.setItem('trialStatus', 'expired');
+            document.getElementById('trialExpiredModal').classList.add('active');
+            disableApplication();
+        }
+    }
+
+        function updateTrialCountdown() {
+            if (!localStorage.getItem('trialStartDate')) {
+                return;
+            }
+            
+            if (localStorage.getItem('trialStatus') === 'expired') return;
             const startDate = new Date(localStorage.getItem('trialStartDate'));
             const now = new Date();
             const trialDays = 3;
+            const endDate = new Date(startDate);
+            endDate.setDate(startDate.getDate() + trialDays);
             
-            // Hitung selisih hari
-            const diffTime = now - startDate;
-            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            // Hitung waktu tersisa
+            const diffTime = endDate - now;
             
-            if (diffDays >= trialDays) {
-                localStorage.setItem('trialStatus', 'expired');
-                document.getElementById('trialExpiredModal').classList.add('active');
-                disableApplication();
+            if (diffTime <= 0) {
+                checkTrialStatus();
+                return;
+            }
+            
+            // Hitung hari, jam, menit, detik
+            const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diffTime % (1000 * 60)) / 1000);
+            
+            // Format waktu untuk ditampilkan
+            const timeString = `${days} Hari ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            const shortTimeString = `${days} Hari ${hours.toString().padStart(2, '0')}j`;
+            
+            // Update tampilan di sidebar (desktop)
+            const countdownEl = document.getElementById('sidebarTrialCountdown');
+            if (countdownEl) {
+                countdownEl.querySelector('.trial-time').textContent = timeString;
+            }
+            
+            // Update tampilan di mobile
+            const mobileCountdown = document.getElementById('mobileTrialCountdown');
+            if (mobileCountdown) {
+                mobileCountdown.querySelector('span').textContent = shortTimeString;
+                
+                // Ubah warna jika trial hampir habis
+                const progressPercent = ((trialDays * 24 * 60 * 60 * 1000 - diffTime) / (trialDays * 24 * 60 * 60 * 1000)) * 100;
+                if (progressPercent > 80) {
+                    mobileCountdown.style.color = '#ffcc00';
+                }
+                if (progressPercent > 90) {
+                    mobileCountdown.style.color = '#ff6666';
+                }
+            }
+            
+            // Update progress bar (desktop)
+            const totalTrialTime = trialDays * 24 * 60 * 60 * 1000;
+            const elapsedTime = totalTrialTime - diffTime;
+            const progressPercent = (elapsedTime / totalTrialTime) * 100;
+            
+            const progressBar = document.getElementById('trialProgressBar');
+            if (progressBar) {
+                progressBar.style.width = `${progressPercent}%`;
+                
+                // Ubah warna berdasarkan sisa waktu
+                if (progressPercent > 80) {
+                    progressBar.style.background = 'linear-gradient(90deg, var(--warning), var(--danger))';
+                } else if (progressPercent > 50) {
+                    progressBar.style.background = 'linear-gradient(90deg, var(--warning), var(--accent))';
+                }
+            }
+            
+            // Update modal countdown (jika ada)
+            const modalCountdown = document.getElementById('trialCountdown');
+            if (modalCountdown) {
+                modalCountdown.innerHTML = `
+                    <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;">${timeString}</div>
+                    <div style="font-size: 0.9rem; color: var(--gray);">Sisa waktu trial Anda</div>
+                `;
+            }
+            
+            // Notifikasi saat trial hampir habis
+            if (progressPercent > 90 && !localStorage.getItem('trialWarningShown')) {
+                showToast('Masa trial Anda hampir habis!', 'warning');
+                localStorage.setItem('trialWarningShown', 'true');
             }
         }
-
-        function updateTrialCountdown() {
-    if (localStorage.getItem('trialStatus') === 'expired') return;
-    
-    const startDate = new Date(localStorage.getItem('trialStartDate'));
-    const now = new Date();
-    const trialDays = 3;
-    const endDate = new Date(startDate);
-    endDate.setDate(startDate.getDate() + trialDays);
-    
-    // Hitung waktu tersisa
-    const diffTime = endDate - now;
-    
-    if (diffTime <= 0) {
-        checkTrialStatus();
-        return;
-    }
-    
-    // Hitung hari, jam, menit, detik
-    const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diffTime % (1000 * 60)) / 1000);
-    
-    // Format waktu untuk ditampilkan
-    const timeString = `${days} Hari ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    const shortTimeString = `${days} Hari ${hours.toString().padStart(2, '0')}j`;
-    
-    // Update tampilan di sidebar (desktop)
-    const countdownEl = document.getElementById('sidebarTrialCountdown');
-    if (countdownEl) {
-        countdownEl.querySelector('.trial-time').textContent = timeString;
-    }
-    
-    // Update tampilan di mobile
-    const mobileCountdown = document.getElementById('mobileTrialCountdown');
-    if (mobileCountdown) {
-        mobileCountdown.querySelector('span').textContent = shortTimeString;
-        
-        // Ubah warna jika trial hampir habis
-        const progressPercent = ((trialDays * 24 * 60 * 60 * 1000 - diffTime) / (trialDays * 24 * 60 * 60 * 1000)) * 100;
-        if (progressPercent > 80) {
-            mobileCountdown.style.color = '#ffcc00';
-        }
-        if (progressPercent > 90) {
-            mobileCountdown.style.color = '#ff6666';
-        }
-    }
-    
-    // Update progress bar (desktop)
-    const totalTrialTime = trialDays * 24 * 60 * 60 * 1000;
-    const elapsedTime = totalTrialTime - diffTime;
-    const progressPercent = (elapsedTime / totalTrialTime) * 100;
-    
-    const progressBar = document.getElementById('trialProgressBar');
-    if (progressBar) {
-        progressBar.style.width = `${progressPercent}%`;
-        
-        // Ubah warna berdasarkan sisa waktu
-        if (progressPercent > 80) {
-            progressBar.style.background = 'linear-gradient(90deg, var(--warning), var(--danger))';
-        } else if (progressPercent > 50) {
-            progressBar.style.background = 'linear-gradient(90deg, var(--warning), var(--accent))';
-        }
-    }
-    
-    // Update modal countdown (jika ada)
-    const modalCountdown = document.getElementById('trialCountdown');
-    if (modalCountdown) {
-        modalCountdown.innerHTML = `
-            <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;">${timeString}</div>
-            <div style="font-size: 0.9rem; color: var(--gray);">Sisa waktu trial Anda</div>
-        `;
-    }
-    
-    // Notifikasi saat trial hampir habis
-    if (progressPercent > 90 && !localStorage.getItem('trialWarningShown')) {
-        showToast('Masa trial Anda hampir habis!', 'warning');
-        localStorage.setItem('trialWarningShown', 'true');
-    }
-}
         function disableApplication() {
     // Nonaktifkan semua fungsi utama
     document.querySelectorAll('button, input, select, textarea, a').forEach(el => {
@@ -192,8 +199,10 @@
 }
         // Panggil setupTrial di DOMContentLoaded
         document.addEventListener('DOMContentLoaded', function() {
-            setupTrial();
-            
+            // Jika sudah login (ada nama pengguna) tapi belum setup trial
+            if (localStorage.getItem('userName') && !localStorage.getItem('trialStartDate')) {
+                setupTrial();
+            }
             // Event listener untuk tombol modal trial
             document.getElementById('understandTrial').addEventListener('click', function() {
                 document.getElementById('trialModal').classList.remove('active');
@@ -262,6 +271,28 @@
             const firstDay = new Date();
             firstDay.setDate(1);
             document.getElementById('exportStartDate').value = firstDay.toISOString().split('T')[0];
+
+            document.getElementById('confirmLogin').addEventListener('click', function() {
+            const userName = document.getElementById('userNameInput').value.trim();
+            if (!userName) {
+                showToast('Harap masukkan nama Anda', 'error');
+                return;
+            }
+            
+            // Save user name to localStorage
+            localStorage.setItem('userName', userName);
+            
+            // Hide login modal
+            document.getElementById('loginModal').classList.remove('active');
+            
+            // Update user avatar in header
+            const userAvatar = document.querySelector('.user-avatar');
+            const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase();
+            userAvatar.textContent = initials.slice(0, 2);
+            
+            // Mulai masa trial setelah login
+            setupTrial();
+        });
         });
 
         // Database functions

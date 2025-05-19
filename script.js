@@ -231,9 +231,21 @@
                     e.preventDefault();
                     showToast('Akses developer tools dibatasi', 'error');
                 }
+                if ((e.key === 'F5') || 
+                    (e.ctrlKey && e.key === 'r') || 
+                    (e.ctrlKey && e.shiftKey && e.key === 'R')) {
+                    e.preventDefault();
+                    showToast('Refresh browser tidak diizinkan', 'error');
+                    return false;
+                }
             });
         });
-
+        window.addEventListener('beforeunload', function(e) {
+            // Untuk Chrome dan Firefox
+            e.preventDefault();
+            e.returnValue = 'Anda yakin ingin meninggalkan aplikasi? Perubahan mungkin tidak akan disimpan.';
+            return e.returnValue;
+        });
         // Blokir akses ke developer tools
         document.addEventListener('contextmenu', function(e) {
             e.preventDefault();

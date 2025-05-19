@@ -123,7 +123,7 @@
     if (modalCountdown) {
         modalCountdown.innerHTML = `
             <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;">${timeString}</div>
-            <div style="font-size: 0.9rem; color: var(--gray);">Sisa waktu trial Anda</div>
+            <div style="font-size: 0.9rem; color: var(--light);">Sisa waktu trial Anda</div>
         `;
     }
     

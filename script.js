@@ -82,15 +82,22 @@
     // Update tampilan di mobile
     const mobileCountdown = document.getElementById('mobileTrialCountdown');
     if (mobileCountdown) {
-        mobileCountdown.querySelector('span').textContent = shortTimeString;
+        const timeElement = mobileCountdown.querySelector('.trial-time');
+        timeElement.textContent = shortTimeString;
         
-        // Ubah warna jika trial hampir habis
+        // Reset semua kelas
+        mobileCountdown.className = 'mobile-trial-info';
+        
+        // Hitung progress trial
         const progressPercent = ((trialDays * 24 * 60 * 60 * 1000 - diffTime) / (trialDays * 24 * 60 * 60 * 1000)) * 100;
-        if (progressPercent > 80) {
-            mobileCountdown.style.color = '#ffcc00';
-        }
+        
+        // Atur warna berdasarkan sisa waktu
         if (progressPercent > 90) {
-            mobileCountdown.style.color = '#ff6666';
+            mobileCountdown.classList.add('danger');
+        } else if (progressPercent > 80) {
+            mobileCountdown.classList.add('warning');
+        } else {
+            mobileCountdown.classList.add('normal');
         }
     }
     

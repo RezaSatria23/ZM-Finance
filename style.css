@@ -858,19 +858,21 @@
 
         /* Mobile Trial Info */
         .mobile-trial-info {
-            flex: 1;
+             flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 0.5rem;
-            background-color: rgba(67, 97, 238, 0.1);
+            background-color: rgba(67, 97, 238, 0.15); /* Lebih gelap */
             padding: 0.4rem 0.8rem;
             border-radius: 20px;
             font-size: 0.85rem;
-            font-weight: 500;
-            color: var(--primary);
+            font-weight: 600; /* Tebalkan font */
+            color: var(--primary-dark); /* Warna lebih gelap */
             max-width: 120px;
             margin: 0 auto;
+            border: 1px solid rgba(67, 97, 238, 0.3); /* Tambahkan border */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Tambahkan shadow */
         }
 
         .mobile-trial-countdown {
@@ -888,6 +890,7 @@
         }
         .mobile-trial-info i {
             font-size: 0.9rem;
+            color: inherit; /* Ikuti warna parent */
         }
 
         .mobile-trial-info .trial-time {
@@ -896,6 +899,24 @@
             text-overflow: ellipsis;
         }
 
+        /* Warna untuk status trial berbeda */
+        .mobile-trial-info.normal {
+            background-color: rgba(67, 97, 238, 0.15);
+            color: #3a56d4;
+            border-color: rgba(67, 97, 238, 0.3);
+        }
+
+        .mobile-trial-info.warning {
+            background-color: rgba(255, 196, 0, 0.25);
+            color: #d4a93a;
+            border-color: rgba(255, 196, 0, 0.4);
+        }
+
+        .mobile-trial-info.danger {
+            background-color: rgba(239, 68, 68, 0.25);
+            color: #d43a3a;
+            border-color: rgba(239, 68, 68, 0.4);
+        }
         /* Tampilkan trial info di mobile dan sembunyikan di sidebar */
         @media (max-width: 992px) {
             .trial-info {

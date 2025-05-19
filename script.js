@@ -89,8 +89,7 @@
             // Update tampilan di mobile
             const mobileCountdown = document.getElementById('mobileTrialCountdown');
             if (mobileCountdown) {
-                const timeElement = mobileCountdown.querySelector('.trial-time');
-                timeElement.textContent = shortTimeString;
+                mobileCountdown.querySelector('span').textContent = shortTimeString;
                 
                 // Ubah styling jika trial hampir habis
                 const progressPercent = ((trialDays * 24 * 60 * 60 * 1000 - diffTime) / (trialDays * 24 * 60 * 60 * 1000)) * 100;

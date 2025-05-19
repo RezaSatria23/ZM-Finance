@@ -59,12 +59,11 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 1rem;
+            padding: 0 2rem;
             z-index: 90;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             position: sticky;
             top: 0;
-            height: 60px;
         }
 
         .header-actions {
@@ -78,13 +77,7 @@
             align-items: center;
             gap: 12px;
         }
-        .header-content {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-        }
+
         .user-avatar {
             width: 40px;
             height: 40px;
@@ -865,31 +858,83 @@
 
         /* Mobile Trial Info */
         .mobile-trial-info {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 0.5rem;
-            background-color: rgba(67, 97, 238, 0.1);
-            padding: 0.4rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: var(--primary);
-            max-width: 120px;
-            margin: 0 auto;
+            display: none; /* Awalnya disembunyikan untuk desktop */
+            padding: 0.5rem 1rem;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.1);
+            margin: 0.5rem;
+            border-radius: var(--border-radius-sm);
         }
 
-        .mobile-trial-info i {
+        .mobile-trial-countdown {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .mobile-trial-countdown i {
             font-size: 0.9rem;
         }
 
-        .mobile-trial-info .trial-time {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        /* Tampilkan trial info di mobile dan sembunyikan di sidebar */
+        @media (max-width: 992px) {
+            .trial-info {
+                display: none;
+            }
+            
+            .mobile-trial-info {
+                display: block;
+            }
         }
 
+        @media (max-width: 576px) {
+            .mobile-trial-countdown span {
+                font-size: 0.8rem;
+            }
+        }
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--white);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            padding: 0.5rem 0;
+        }
+
+        .mobile-nav-menu {
+            display: flex;
+            justify-content: space-around;
+            list-style: none;
+        }
+
+        .mobile-nav-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--gray);
+            font-size: 0.75rem;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .mobile-nav-link i {
+            font-size: 1.2rem;
+            margin-bottom: 4px;
+        }
+
+        .mobile-nav-link.active {
+            color: var(--primary);
+            background-color: var(--primary-light);
+        }
 
         /* Responsive Design */
         @media (max-width: 992px) {
@@ -1067,52 +1112,3 @@
                 padding: 1rem;
             }
         }
-        /* Style untuk mobile trial info di header */
-.header-actions {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.mobile-trial-info {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background-color: rgba(67, 97, 238, 0.1);
-    padding: 0.5rem 0.8rem;
-    border-radius: var(--border-radius-sm);
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: var(--primary);
-}
-
-.mobile-trial-info i {
-    font-size: 0.9rem;
-}
-
-/* Responsive adjustments */
-@media (max-width: 992px) {
-    .header-actions {
-        gap: 0.75rem;
-    }
-    
-    .mobile-trial-info {
-        padding: 0.4rem 0.7rem;
-        font-size: 0.8rem;
-    }
-    
-    #refreshDataBtn span {
-        display: none;
-    }
-}
-
-@media (max-width: 576px) {
-    .mobile-trial-info {
-        padding: 0.3rem 0.6rem;
-        font-size: 0.75rem;
-    }
-    
-    .mobile-trial-info i {
-        font-size: 0.8rem;
-    }
-}

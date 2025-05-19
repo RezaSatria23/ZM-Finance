@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZenMix Finance - Pengelola Keuangan Pribadi</title>
+    <link rel="icon" href="https://files.catbox.moe/peiqnv.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Add this right after the opening <body> tag -->
+    <div class="modal active" id="loginModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Masukkan Nama Anda</h3>
+            </div>
+            <div>
+                <p>Nama ini digunakan pada dokumen laporan dan tidak dapat diganti</p>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Nama Lengkap</label>
+                    <input type="text" class="form-control" id="userNameInput" placeholder="Contoh: Reza Satria Tama" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="confirmLogin">Masuk ke Aplikasi</button>
+            </div>
+        </div>
+    </div>
+    <!-- Add this near other modals -->
+    <div class="modal" id="editNameModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit Nama Pengguna</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Nama Baru</label>
+                    <input type="text" class="form-control" id="newUserNameInput" required>
+                    <small class="text-muted" id="editNameCounter">Anda bisa mengedit nama 5 kali dalam sebulan. Sisa pengeditan: <span id="remainingEdits"></span></small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancelEditName">Batal</button>
+                <button class="btn btn-primary" id="saveUserName">Simpan</button>
+            </div>
+        </div>
+    </div>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-actions">
+                <button class="btn btn-outline" id="refreshDataBtn">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>Refresh Data</span>
+                </button>
+            </div>
+            <div class="user-profile">
+                <span class="user-name" id="userNameDisplay"></span>
+                <div class="user-avatar"></div>
+            </div>
+        </header>
+
+        <aside class="app-sidebar">
+            <div class="sidebar-header">
+                <div class="app-logo">
+                    <i class="fas fa-wallet"></i>
+                    <span>ZenMix</span>
+                </div>
+            </div>
+            <div class="trial-info">
+                <div class="trial-header">
+                    <i class="fas fa-clock"></i>
+                    <span>Masa Trial</span>
+                </div>
+                <div class="trial-countdown" id="sidebarTrialCountdown">
+                    <div class="trial-time">3 Hari 00:00:00</div>
+                    <div class="trial-label">Sisa Waktu</div>
+                </div>
+                <div class="trial-progress">
+                    <div class="progress-bar" id="trialProgressBar"></div>
+                </div>
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active" data-target="dashboard">
+                            <i class="fas fa-chart-pie"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-target="add-transaction">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>Tambah Transaksi</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-target="edit-transaction">
+                            <i class="fas fa-edit"></i>
+                            <span>Edit Transaksi</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-target="history">
+                            <i class="fas fa-history"></i>
+                            <span>Histori</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-target="import-export">
+                            <i class="fas fa-exchange-alt"></i>
+                            <span>Impor/Ekspor</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="app-main">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section active">
+                <div class="section-header">
+                    <h2 class="section-title">Dashboard</h2>
+                    <div class="actions">
+                        <button class="btn btn-primary" id="exportDataBtn">
+                            <i class="fas fa-file-export"></i>
+                            <span>Export Data</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="overview-grid">
+                    <div class="stat-card balance">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-label">Saldo Total</div>
+                                <div class="stat-value" id="totalBalance">Rp0</div>
+                            </div>
+                            <div class="stat-icon">
+                                <i class="fas fa-wallet"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card income">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-label">Total Pemasukan</div>
+                                <div class="stat-value" id="totalIncome">Rp0</div>
+                            </div>
+                            <div class="stat-icon">
+                                <i class="fas fa-arrow-down"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card expense">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-label">Total Pengeluaran</div>
+                                <div class="stat-value" id="totalExpense">Rp0</div>
+                            </div>
+                            <div class="stat-icon">
+                                <i class="fas fa-arrow-up"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="history-container" style="margin-top: 2rem;">
+                    <div class="transactions-header">
+                        <h3 class="section-title">Transaksi Terakhir</h3>
+                    </div>
+                    <div class="transactions-list" id="recentTransactions">
+                        <!-- Recent transactions will be loaded here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Add Transaction Section -->
+            <section id="add-transaction" class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Tambah Transaksi</h2>
+                </div>
+
+                <div class="form-container">
+                    <div class="form-header">
+                        <h3 class="form-title">Form Tambah Transaksi</h3>
+                        <p class="form-subtitle">Isi detail transaksi Anda</p>
+                    </div>
+                    <form id="addTransactionForm">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Jenis Transaksi</label>
+                                <select class="form-control" id="transactionType" required>
+                                    <option value="">Pilih Jenis</option>
+                                    <option value="income">Pemasukan</option>
+                                    <option value="expense">Pengeluaran</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Jumlah</label>
+                                <input type="number" class="form-control" id="transactionAmount" placeholder="Rp" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Kategori</label>
+                                <select class="form-control" id="transactionCategory" required>
+                                    <option value="">Pilih Kategori</option>
+                                    <!-- Categories will be populated by JS -->
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Tanggal</label>
+                                <input type="date" class="form-control" id="transactionDate" required>
+                            </div>
+                            <div class="form-group full-width">
+                                <label class="form-label">Deskripsi (Opsional)</label>
+                                <textarea class="form-control" id="transactionDescription" placeholder="Tambahkan catatan tentang transaksi ini"></textarea>
+                            </div>
+                            <div class="form-actions">
+                                <button type="reset" class="btn btn-outline">Reset</button>
+                                <button type="submit" class="btn btn-primary">Simpan Transaksi</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Edit Transaction Section -->
+            <section id="edit-transaction" class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Edit Transaksi</h2>
+                </div>
+
+                <div class="form-container">
+                    <div class="form-header">
+                        <h3 class="form-title">Form Edit Transaksi</h3>
+                        <p class="form-subtitle">Pilih dan edit transaksi yang ada</p>
+                    </div>
+                    <form id="editTransactionForm">
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label class="form-label">Pilih Transaksi</label>
+                                <select class="form-control" id="selectTransaction" required>
+                                    <option value="">Cari transaksi...</option>
+                                    <!-- Transactions will be populated by JS -->
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Jumlah</label>
+                                <input type="number" class="form-control" id="editAmount" placeholder="Rp" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Kategori</label>
+                                <select class="form-control" id="editCategory" required>
+                                    <option value="">Pilih Kategori</option>
+                                    <!-- Categories will be populated by JS -->
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Tanggal</label>
+                                <input type="date" class="form-control" id="editDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Jenis Transaksi</label>
+                                <select class="form-control" id="editType" required>
+                                    <option value="income">Pemasukan</option>
+                                    <option value="expense">Pengeluaran</option>
+                                </select>
+                            </div>
+                            <div class="form-group full-width">
+                                <label class="form-label">Deskripsi (Opsional)</label>
+                                <textarea class="form-control" id="editDescription" placeholder="Tambahkan catatan tentang transaksi ini"></textarea>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-outline" id="cancelEdit">Batal</button>
+                                <button type="submit" class="btn btn-primary">Perbarui Transaksi</button>
+                                <button type="button" class="btn btn-outline" id="deleteTransaction" style="margin-left: auto; color: var(--danger); border-color: var(--danger);">
+                                    <i class="fas fa-trash"></i>
+                                    <span>Hapus</span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- History Section -->
+            <section id="history" class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Histori Transaksi</h2>
+                </div>
+
+                <div class="history-container">
+                    <div class="history-filters">
+                        <div class="filter-group">
+                            <span class="filter-label">Jenis:</span>
+                            <select class="filter-select" id="filterType">
+                                <option value="all">Semua</option>
+                                <option value="income">Pemasukan</option>
+                                <option value="expense">Pengeluaran</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <span class="filter-label">Kategori:</span>
+                            <select class="filter-select" id="filterCategory">
+                                <option value="all">Semua</option>
+                                <!-- Categories will be populated by JS -->
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <span class="filter-label">Periode:</span>
+                            <select class="filter-select" id="filterPeriod">
+                                <option value="all">Semua</option>
+                                <option value="week">Minggu Ini</option>
+                                <option value="month">Bulan Ini</option>
+                                <option value="year">Tahun Ini</option>
+                            </select>
+                        </div>
+                        <div class="search-bar">
+                            <input type="text" class="search-input" id="searchHistory" placeholder="Cari transaksi...">
+                            <button class="search-btn" id="searchBtn">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="transactions-list" id="allTransactions">
+                        <!-- All transactions will be loaded here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Impor / ekspor-->
+            <section id="import-export" class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Impor/Ekspor Data</h2>
+                </div>
+
+                <div class="form-container">
+                    <div class="form-header">
+                        <h3 class="form-title">Backup & Restore Data</h3>
+                        <p class="form-subtitle">Kelola data keuangan Anda</p>
+                    </div>
+                    
+                    <div class="form-grid">
+                        <!-- Ekspor Data -->
+                        <div class="form-group">
+                            <h4 style="margin-bottom: 1rem;">Ekspor Data</h4>
+                            <p style="margin-bottom: 1.5rem; color: var(--gray);">Simpan salinan data keuangan Anda ke file.</p>
+                            <button class="btn btn-primary" id="exportAllDataBtn">
+                                <i class="fas fa-file-export"></i>
+                                <span>Ekspor Semua Data</span>
+                            </button>
+                            <small class="text-muted">Data akan diekspor dalam format JSON</small>
+                        </div>
+                        
+                        <!-- Impor Data -->
+                        <div class="form-group">
+                            <h4 style="margin-bottom: 1rem;">Impor Data</h4>
+                            <p style="margin-bottom: 1.5rem; color: var(--gray);">Muat ulang data dari file backup.</p>
+                            <div style="display: flex; gap: 1rem; align-items: center;">
+                                <input type="file" id="importFileInput" accept=".json" style="display: none;">
+                                <button class="btn btn-outline" id="selectImportFileBtn">
+                                    <i class="fas fa-folder-open"></i>
+                                    <span>Pilih File</span>
+                                </button>
+                                <span id="selectedFileName" style="font-size: 0.9rem; color: var(--gray);">Belum ada file dipilih</span>
+                            </div>
+                            <button class="btn btn-primary" id="importDataBtn" style="margin-top: 1rem;" disabled>
+                                <i class="fas fa-file-import"></i>
+                                <span>Impor Data</span>
+                            </button>
+                            <small class="text-muted" style="color: var(--danger);">Peringatan: Impor data akan menimpa data saat ini!</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Reset Data -->
+                    <div class="form-group" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--light-gray);">
+                        <h4 style="margin-bottom: 1rem;">Reset Data</h4>
+                        <p style="margin-bottom: 1.5rem; color: var(--gray);">Kembalikan aplikasi ke keadaan awal.</p>
+                        <button class="btn btn-outline" id="resetDataBtn" style="color: var(--danger); border-color: var(--danger);">
+                            <i class="fas fa-trash"></i>
+                            <span>Reset Semua Data</span>
+                        </button>
+                        <small class="text-muted" style="color: var(--danger);">Peringatan: Tindakan ini tidak dapat dibatalkan!</small>
+                    </div>
+                </div>
+            </section>
+            <!-- Di bagian modal, sebelum </body> -->
+            <div class="modal" id="resetConfirmModal">
+                <div class="modal-content" style="max-width: 500px;">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Konfirmasi Reset Data</h3>
+                        <button class="close-modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Apakah Anda yakin ingin menghapus semua data?</p>
+                        <p style="color: var(--danger); font-weight: 500;">Semua transaksi dan pengaturan akan dihapus permanen.</p>
+                        <div class="form-group" style="margin-top: 1.5rem;">
+                            <label class="form-label">Ketik "HAPUS" untuk konfirmasi</label>
+                            <input type="text" class="form-control" id="resetConfirmationInput" placeholder="HAPUS">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-outline" id="cancelReset">Batal</button>
+                        <button class="btn btn-primary" id="confirmReset" disabled style="background-color: var(--danger); border-color: var(--danger);">
+                            Reset Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Mobile Navigation -->
+    <nav class="mobile-nav">
+        <ul class="mobile-nav-menu">
+            <li>
+                <a href="#" class="mobile-nav-link active" data-target="dashboard">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="mobile-nav-link" data-target="add-transaction">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Tambah</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="mobile-nav-link" data-target="edit-transaction">
+                    <i class="fas fa-edit"></i>
+                    <span>Edit</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="mobile-nav-link" data-target="history">
+                    <i class="fas fa-history"></i>
+                    <span>Histori</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="mobile-nav-link" data-target="import-export">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span>Impor/Ekspor</span>
+                </a>
+            </li>
+        </ul>
+        <li class="mobile-trial-info">
+            <div class="mobile-trial-countdown" id="mobileTrialCountdown">
+                <i class="fas fa-clock"></i>
+                <span>3 Hari</span>
+            </div>
+        </li>
+    </nav>
+
+    <!-- Export Modal -->
+    <div class="modal" id="exportModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Export Data</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Pilih format untuk export data transaksi:</p>
+                <div class="form-group" style="margin-top: 1.5rem;">
+                    <label class="form-label">Format File</label>
+                    <select class="form-control" id="exportFormat">
+                        <option value="pdf">PDF (Laporan Keuangan)</option>
+                        <option value="json">JSON</option>
+                        <option value="csv">CSV</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-top: 1rem;">
+                    <label class="form-label">Periode</label>
+                    <select class="form-control" id="exportPeriod">
+                        <option value="all">Semua Data</option>
+                        <option value="month">Bulan Ini</option>
+                        <option value="year">Tahun Ini</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                </div>
+                <div id="customDateRange" style="display: none; margin-top: 1rem;">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Dari Tanggal</label>
+                            <input type="date" class="form-control" id="exportStartDate">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Sampai Tanggal</label>
+                            <input type="date" class="form-control" id="exportEndDate">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancelExport">Batal</button>
+                <button class="btn btn-primary" id="confirmExport">Export</button>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Trial -->
+    <div class="modal" id="trialModal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Masa Trial ZenMix Finance</h3>
+            </div>
+            <div class="modal-body">
+                <p>Selamat datang di ZenMix Finance! Anda sedang menggunakan versi trial selama 3 hari.</p>
+                <p>Setelah masa trial berakhir, Anda perlu membeli lisensi untuk terus menggunakan aplikasi.</p>
+                <div id="trialCountdown" style="text-align: center; margin: 1.5rem 0; font-size: 1.2rem;"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="understandTrial">Saya Mengerti</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Trial Expired -->
+    <div class="modal" id="trialExpiredModal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Masa Trial Telah Berakhir</h3>
+            </div>
+            <div class="modal-body">
+                <p>Masa trial 3 hari Anda telah berakhir.</p>
+                <p>Untuk terus menggunakan ZenMix Finance, silakan hubungi kami untuk membeli lisensi.</p>
+                <p>Terima kasih telah mencoba ZenMix Finance!</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="contactUsBtn">Hubungi Kami</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toastNotification">
+        <i class="fas fa-check-circle toast-icon"></i>
+        <span class="toast-message">Transaksi berhasil disimpan!</span>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

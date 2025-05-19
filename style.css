@@ -929,9 +929,7 @@
             }
             
             .mobile-trial-info {
-                padding: 0.3rem 0.6rem;
-                font-size: 0.8rem;
-                max-width: 110px;
+                display: none !important;
             }
         }
 

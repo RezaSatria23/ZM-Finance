@@ -1112,3 +1112,52 @@
                 padding: 1rem;
             }
         }
+        /* Style untuk mobile trial info di header */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.mobile-trial-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: rgba(67, 97, 238, 0.1);
+    padding: 0.5rem 0.8rem;
+    border-radius: var(--border-radius-sm);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--primary);
+}
+
+.mobile-trial-info i {
+    font-size: 0.9rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .header-actions {
+        gap: 0.75rem;
+    }
+    
+    .mobile-trial-info {
+        padding: 0.4rem 0.7rem;
+        font-size: 0.8rem;
+    }
+    
+    #refreshDataBtn span {
+        display: none;
+    }
+}
+
+@media (max-width: 576px) {
+    .mobile-trial-info {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.75rem;
+    }
+    
+    .mobile-trial-info i {
+        font-size: 0.8rem;
+    }
+}

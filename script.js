@@ -91,13 +91,20 @@
             if (mobileCountdown) {
                 mobileCountdown.querySelector('span').textContent = shortTimeString;
                 
-                // Ubah warna jika trial hampir habis
+                // Ubah styling jika trial hampir habis
                 const progressPercent = ((trialDays * 24 * 60 * 60 * 1000 - diffTime) / (trialDays * 24 * 60 * 60 * 1000)) * 100;
+                
+                // Reset style
+                mobileCountdown.style.backgroundColor = 'rgba(67, 97, 238, 0.1)';
+                mobileCountdown.style.color = 'var(--primary)';
+                
                 if (progressPercent > 80) {
-                    mobileCountdown.style.color = '#ffcc00';
+                    mobileCountdown.style.backgroundColor = 'rgba(255, 196, 0, 0.2)';
+                    mobileCountdown.style.color = 'var(--warning)';
                 }
                 if (progressPercent > 90) {
-                    mobileCountdown.style.color = '#ff6666';
+                    mobileCountdown.style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
+                    mobileCountdown.style.color = 'var(--danger)';
                 }
             }
             

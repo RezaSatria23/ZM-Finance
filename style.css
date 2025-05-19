@@ -830,49 +830,49 @@
         }
         /* Mobile Navigation Bar */
         @media (max-width: 768px) {
-    #trialModal .modal-content,
-    #trialExpiredModal .modal-content {
-        width: 90%;
-        padding: 1.5rem;
-    }
-    
-    #trialCountdown div:first-child {
-        font-size: 1.3rem;
-    }
-}
+            #trialModal .modal-content,
+            #trialExpiredModal .modal-content {
+                width: 90%;
+                padding: 1.5rem;
+            }
+            
+            #trialCountdown div:first-child {
+                font-size: 1.3rem;
+            }
+        }
 
-@media (max-width: 576px) {
-    .mobile-trial-countdown {
-        padding: 0.3rem;
-    }
-    
-    #trialModal .modal-content,
-    #trialExpiredModal .modal-content {
-        padding: 1rem;
-    }
-    
-    #trialCountdown div:first-child {
-        font-size: 1.1rem;
-    }
-}
+        @media (max-width: 576px) {
+            .mobile-trial-countdown {
+                padding: 0.3rem;
+            }
+            
+            #trialModal .modal-content,
+            #trialExpiredModal .modal-content {
+                padding: 1rem;
+            }
+            
+            #trialCountdown div:first-child {
+                font-size: 1.1rem;
+            }
+        }
 
         /* Mobile Trial Info */
         .mobile-trial-info {
-             flex: 1;
+            flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 0.5rem;
-            background-color: rgba(67, 97, 238, 0.15); /* Lebih gelap */
-            padding: 0.4rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600; /* Tebalkan font */
-            color: var(--primary-dark); /* Warna lebih gelap */
-            max-width: 120px;
-            margin: 0 auto;
-            border: 1px solid rgba(67, 97, 238, 0.3); /* Tambahkan border */
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Tambahkan shadow */
+            background-color: var(--primary);
+            padding: 0.5rem;
+            border-radius: var(--border-radius-sm);
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: white;
+            margin: 0 1rem;
+            min-width: 140px;
+            box-shadow: 0 2px 8px rgba(67, 97, 238, 0.3);
+            transition: var(--transition);
         }
 
         .mobile-trial-countdown {
@@ -890,7 +890,7 @@
         }
         .mobile-trial-info i {
             font-size: 0.9rem;
-            color: inherit; /* Ikuti warna parent */
+            color: white; 
         }
 
         .mobile-trial-info .trial-time {
@@ -917,6 +917,17 @@
             color: #d43a3a;
             border-color: rgba(239, 68, 68, 0.4);
         }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .mobile-trial-info.pulse {
+            animation: pulse 1.5s infinite;
+        }
+
         /* Tampilkan trial info di mobile dan sembunyikan di sidebar */
         @media (max-width: 992px) {
             .trial-info {

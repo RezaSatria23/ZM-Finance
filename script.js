@@ -83,6 +83,13 @@
     const mobileCountdown = document.getElementById('mobileTrialCountdown');
     if (mobileCountdown) {
         const timeElement = mobileCountdown.querySelector('.trial-time');
+        
+        // Format waktu untuk mobile: "3H 12j 45m" atau "3 Hari 12:45:30"
+        const isMobileSmall = window.innerWidth < 400;
+        const shortTimeString = isMobileSmall 
+            ? `${days}H ${hours}j ${minutes}m`
+            : `${days} Hari ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
         timeElement.textContent = shortTimeString;
         
         // Reset semua kelas
@@ -91,11 +98,11 @@
         // Hitung progress trial
         const progressPercent = ((trialDays * 24 * 60 * 60 * 1000 - diffTime) / (trialDays * 24 * 60 * 60 * 1000)) * 100;
         
-        // Atur warna berdasarkan sisa waktu
+        // Atur warna dan efek berdasarkan sisa waktu
         if (progressPercent > 90) {
-            mobileCountdown.classList.add('danger');
+            mobileCountdown.classList.add('danger', 'pulse');
         } else if (progressPercent > 80) {
-            mobileCountdown.classList.add('warning');
+            mobileCountdown.classList.add('warning', 'pulse');
         } else {
             mobileCountdown.classList.add('normal');
         }

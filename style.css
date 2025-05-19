@@ -1158,3 +1158,44 @@
                 padding: 1rem;
             }
         }
+        .header-trial-info {
+    display: none; /* Sembunyikan secara default */
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    padding: 0.3rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: white;
+    margin: 0 0.5rem;
+    min-width: 110px;
+    justify-content: center;
+}
+
+.header-trial-info i {
+    font-size: 0.9rem;
+}
+
+.header-trial-info .trial-time {
+    white-space: nowrap;
+}
+
+/* Tampilkan di mobile dan sembunyikan di desktop */
+@media (max-width: 992px) {
+    .header-trial-info {
+        display: flex;
+    }
+    
+    .trial-info {
+        display: none;
+    }
+}
+
+@media (max-width: 576px) {
+    .header-trial-info {
+        font-size: 0.75rem;
+        padding: 0.3rem 0.6rem;
+        min-width: 90px;
+    }
+}
